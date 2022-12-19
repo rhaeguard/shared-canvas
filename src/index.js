@@ -6,7 +6,7 @@ const webRtcProvider = new WebrtcProvider('shared-canvas', yDoc)
 
 let currentColor = "black";
 
-const WIDTH = 500;
+const WIDTH = 1200;
 const HEIGHT = 650;
 const STEP = 25;
 
