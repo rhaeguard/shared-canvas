@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            font-family: 'Chivo Mono', monospace;
+        }
+
+        #main-canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="main-canvas"></canvas>
+    <div>Pick color: <input type="color" id="color-picker" name="color-picker"></div>
+    <script type="module" src="./index.js"></script>
+</body>
+</html>

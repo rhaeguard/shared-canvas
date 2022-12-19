@@ -1,0 +1,20 @@
+{
+  "name": "shared-canvas",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^4.0.1"
+  },
+  "dependencies": {
+    "uuidv4": "^6.2.13",
+    "y-webrtc": "^10.2.3",
+    "yjs": "^13.5.43"
+  }
+}
