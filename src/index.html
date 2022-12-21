@@ -13,6 +13,10 @@
     <style>
         body {
             margin: 0;
+            
+        }
+
+        .container {
             display: flex;
             font-family: 'Chivo Mono', monospace;
         }
@@ -20,11 +24,54 @@
         #main-canvas {
             border: 1px solid black;
         }
+
+        .sidebar {
+            padding-left: 1%;
+        }
+
+        #color-picker-input {
+            width: 0;
+            height: 0;
+        }
+
+        #color-picker-span {
+            width: 50px;
+            height: 50px; 
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: black;
+            display: inline-block;
+        }
+
+        #color-picker-label {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-    <canvas id="main-canvas"></canvas>
-    <div>Pick color: <input type="color" id="color-picker" name="color-picker"></div>
+    <div class="container">
+        <canvas id="main-canvas"></canvas>
+        <div class="sidebar">
+            <h1>Settings</h1>
+            <div class="color-picker-wrapper">
+                <label for="color-picker-span" id="color-picker-label">
+                    Pick a color: 
+                    <span id="color-picker-span">
+                        <input type="color" id="color-picker-input" name="color-picker">
+                    </span>
+                </label>
+            </div>
+            <hr>
+            <h2>Tools</h2>
+            <div class="tools">
+                <input type="radio" id="tool-brush" name="tool" value="brush" checked>
+                <label for="tool-brush">Brush</label>
+                <input type="radio" id="tool-eraser" name="tool" value="eraser">
+                <label for="tool-eraser">Eraser</label>
+            </div>
+        </div>
+    </div>
     <script type="module" src="./index.js"></script>
 </body>
 </html>

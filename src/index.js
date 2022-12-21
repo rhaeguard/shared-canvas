@@ -1,58 +1,50 @@
 import * as Y from 'yjs'
 import { WebrtcProvider } from 'y-webrtc'
+import { TOOLS } from './tools'
+import { drawGridlines } from './canvasUtils'
+import { generateRandomUser } from './generalUtils'
+import { WIDTH, HEIGHT, STEP } from './constants'
 
 const yDoc = new Y.Doc()
 const webRtcProvider = new WebrtcProvider('shared-canvas', yDoc)
 
 let currentColor = "black";
-
-const WIDTH = 1200;
-const HEIGHT = 650;
-const STEP = 25;
-
-function drawGridlines(ctx) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'lightgrey';
-
-    // draw vertical lines
-    for (let xi = 0; xi < Math.floor(WIDTH / STEP); xi++) {
-        ctx.beginPath();
-        ctx.moveTo(STEP * xi, 0);
-        ctx.lineTo(STEP * xi, HEIGHT);
-        ctx.stroke();
-    }
-
-    // draw horizontal lines
-    for (let xi = 0; xi < Math.floor(HEIGHT / STEP); xi++) {
-        ctx.beginPath();
-        ctx.moveTo(0, STEP * xi);
-        ctx.lineTo(WIDTH, STEP * xi);
-        ctx.stroke();
-    }
-}
-
-function generateRandomNumber() {
-    return Math.ceil(Math.random() * 1000000);
-}
-
-function generateRandomUser() {
-    return {
-        id: generateRandomNumber()
-    }
-}
+let currentTool = TOOLS.BRUSH
 
 function setupColorPicker() {
-    const cp = document.getElementById("color-picker");
+    const cp = document.getElementById("color-picker-input");
     cp.value = currentColor;
+
+    const span = document.getElementById("color-picker-span");
+    span.addEventListener('click', (e) => {
+        cp.click()
+    })
 
     cp.addEventListener('change', (e) => {
         currentColor = e.target.value;
+        span.style.backgroundColor = currentColor;
     })
+}
+
+function setupTools() {
+    for (let rb of document.querySelectorAll(`input[name="tool"]`)) {
+        rb.addEventListener('change', (e) => {
+            currentTool = TOOLS.getTool(e.target.value)
+        })
+    }
+}
+
+function setupCanvas() {
+    const canvas = document.getElementById("main-canvas");
+    canvas.height = HEIGHT;
+    canvas.width = WIDTH;
+    return canvas
 }
 
 (function () {
     const user = generateRandomUser()
     setupColorPicker();
+    setupTools();
     // create a new event type
     const DRAW_EVENT = new Event('draw');
 
@@ -69,10 +61,7 @@ function setupColorPicker() {
     })
 
     // set up the canvas
-    const canvas = document.getElementById("main-canvas");
-    canvas.height = HEIGHT;
-    canvas.width = WIDTH;
-
+    const canvas = setupCanvas();
     const ctx = canvas.getContext('2d');
 
     drawGridlines(ctx);
@@ -87,6 +76,14 @@ function setupColorPicker() {
     // when mouse clicks, do the appropriate action
     canvas.addEventListener('mousedown', setPosition);
 
+    function isCellFree(row, col) {
+        return !localState.positions.some(
+            (element) =>
+                row === element.position.row &&
+                col === element.position.col &&
+                user.id !== element.user.id)
+    }
+
     function setPosition(e) {
         // if not left or right click, stop
         if (e.buttons !== 1 && e.buttons !== 2) return;
@@ -97,15 +94,17 @@ function setupColorPicker() {
         const col = Math.floor(x / STEP)
 
         if (e.buttons === 1) {
-            // left click
-            localState.positions.push({
-                user: user,
-                color: currentColor,
-                position: {
-                    row, col
-                }
-            })
-            canvas.dispatchEvent(DRAW_EVENT);
+            const [didModify, modifiedState] = currentTool.handle(
+                row,
+                col,
+                user,
+                currentColor,
+                localState,
+                isCellFree(row, col)
+            )
+            if (didModify) {
+                canvas.dispatchEvent(DRAW_EVENT);
+            }
         }
     }
 
