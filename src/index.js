@@ -26,10 +26,11 @@ function setupColorPicker() {
     })
 }
 
-function setupTools() {
+function setupTools(canvas) {
     for (let rb of document.querySelectorAll(`input[name="tool"]`)) {
         rb.addEventListener('change', (e) => {
-            currentTool = TOOLS.getTool(e.target.value)
+            currentTool = TOOLS.getTool(e.target.value);
+            changeCanvasCursor(canvas)
         })
     }
 }
@@ -38,19 +39,33 @@ function setupCanvas() {
     const canvas = document.getElementById("main-canvas");
     canvas.height = HEIGHT;
     canvas.width = WIDTH;
+    changeCanvasCursor(canvas);
     return canvas
+}
+
+function changeCanvasCursor(canvas) {
+    canvas.style.cursor = `url('${currentTool.cursorUrl}'), auto`;
 }
 
 (function () {
     const user = generateRandomUser()
+
+    // set up the canvas
+    const canvas = setupCanvas();
+    const ctx = canvas.getContext('2d');
+
     setupColorPicker();
-    setupTools();
+    setupTools(canvas);
     // create a new event type
     const DRAW_EVENT = new Event('draw');
 
     let localState = {
         positions: []
     };
+
+    let userCanvasState = {
+        highlightedCell: null
+    }
 
     // set up the CRDT map
     const ymap = yDoc.getMap("collectiveState");
@@ -59,10 +74,6 @@ function setupCanvas() {
         localState = { ...ymap.get("collectiveState") }
         draw()
     })
-
-    // set up the canvas
-    const canvas = setupCanvas();
-    const ctx = canvas.getContext('2d');
 
     drawGridlines(ctx);
 
@@ -75,6 +86,15 @@ function setupCanvas() {
 
     // when mouse clicks, do the appropriate action
     canvas.addEventListener('mousedown', setPosition);
+    canvas.addEventListener('mousemove', (e) => {
+        const [x, y] = [e.clientX, e.clientY];
+
+        const row = Math.floor(y / STEP)
+        const col = Math.floor(x / STEP)
+
+        userCanvasState.highlightedCell = {row, col}
+        draw();
+    });
 
     function isCellFree(row, col) {
         return !localState.positions.some(
@@ -117,6 +137,13 @@ function setupCanvas() {
             const { row, col } = localState.positions[i].position;
             ctx.fillStyle = localState.positions[i].color;
             ctx.fillRect(col * STEP, row * STEP, STEP, STEP);
+        }
+
+        if (userCanvasState.highlightedCell) {
+            const { row, col } = userCanvasState.highlightedCell;
+            ctx.setLineDash([7, 3]);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(col * STEP, row * STEP, STEP, STEP);
         }
     }
 })();

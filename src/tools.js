@@ -1,3 +1,5 @@
+import { CURSORS } from "./constants"
+
 export const TOOLS = {
     BRUSH: {
         value: "brush",
@@ -14,7 +16,8 @@ export const TOOLS = {
                 return [true, localState]
             }
             return [false, localState]
-        }
+        },
+        cursorUrl: CURSORS.BRUSH
     },
     ERASER: {
         value: "eraser",
@@ -27,7 +30,8 @@ export const TOOLS = {
                 }
             }
             return [false, localState]
-        }
+        },
+        cursorUrl: CURSORS.ERASER
     },
     getTool: (value) => {
         if (TOOLS.ERASER.value === value) return TOOLS.ERASER
