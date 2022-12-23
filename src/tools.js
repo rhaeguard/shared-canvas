@@ -4,12 +4,12 @@ export const TOOLS = {
     BRUSH: {
         value: "brush",
         // handle returns an array of 2 elements [didModify, modifiedState]
-        handle: (row, col, user, {shape, color, style}, localState, isCellFree) => {
+        handle: (row, col, user, { shapeName, color, style }, localState, isCellFree) => {
             if (isCellFree) {
                 localState.positions.push({
                     user: user,
                     color: color,
-                    shape: shape,
+                    shapeName: shapeName,
                     style: style,
                     position: {
                         row, col
@@ -23,7 +23,7 @@ export const TOOLS = {
     },
     ERASER: {
         value: "eraser",
-        handle: (row, col, user, {shape, color, style}, localState, isCellFree) => {
+        handle: (row, col, user, { shape, color, style }, localState, isCellFree) => {
             if (isCellFree) {
                 const index = localState.positions.findIndex(({ position }) => position.row === row && position.col === col)
                 if (index > -1) {
@@ -42,7 +42,17 @@ export const TOOLS = {
 };
 
 export const TRIANGLE = {
+    getTriangleType: (typeName) => {
+        switch(typeName) {
+            case "acbl": return TRIANGLE.ACUTE_BL
+            case "acbr": return TRIANGLE.ACUTE_BR
+            case "actl": return TRIANGLE.ACUTE_TL
+            case "actr": return TRIANGLE.ACUTE_TR
+            default: return null
+        }
+    },
     ACUTE_BL: {
+        value: "acbl",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX, topLeftY);
             ctx.lineTo(topLeftX, topLeftY + STEP);
@@ -50,6 +60,7 @@ export const TRIANGLE = {
         }
     },
     ACUTE_BR: {
+        value: "acbr",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX, topLeftY + STEP);
             ctx.lineTo(topLeftX + STEP, topLeftY + STEP);
@@ -57,6 +68,7 @@ export const TRIANGLE = {
         }
     },
     ACUTE_TL: {
+        value: "acll",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX, topLeftY);
             ctx.lineTo(topLeftX, topLeftY + STEP);
@@ -64,6 +76,7 @@ export const TRIANGLE = {
         }
     },
     ACUTE_TR: {
+        value: "actr",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX + STEP, topLeftY);
             ctx.lineTo(topLeftX + STEP, topLeftY + STEP);
@@ -73,9 +86,12 @@ export const TRIANGLE = {
 }
 
 export const BRUSH_SHAPES = {
-
     CIRCLE: {
         value: "circle",
+        getShape: (shapeName) => {
+            if (!shapeName || shapeName !== "circle") return null
+            return BRUSH_SHAPES.CIRCLE;
+        },
         draw: (ctx, coords, options) => {
             const { row, col } = coords;
 
@@ -88,7 +104,7 @@ export const BRUSH_SHAPES = {
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, 2 * Math.PI);
                 ctx.fill();
-            } else{
+            } else {
                 if (options.style === "dashed") {
                     ctx.setLineDash([7, 3]);
                 } else {
@@ -103,6 +119,10 @@ export const BRUSH_SHAPES = {
     },
     SQUARE: {
         value: "square",
+        getShape: (shapeName) => {
+            if (!shapeName || shapeName !== "square") return null
+            return BRUSH_SHAPES.SQUARE;
+        },
         draw: (ctx, coords, options) => {
             const { row, col } = coords;
             if (!options.style || options.style === "fill") {
@@ -119,35 +139,44 @@ export const BRUSH_SHAPES = {
             }
         }
     },
-    TRIANGLE: (triangleType) => {
-        return {
-            value: "triangle",
-            draw: (ctx, coords, options) => {
-                const { row, col } = coords;
-                const topLeftX = col * STEP;
-                const topLeftY = row * STEP;
+    TRIANGLE: {
+        getShape: (shapeName) => {
+            if (!shapeName) return null
 
-                if (!options.style || options.style === "fill") {
-                    ctx.fillStyle = options.color ?? "black";
+            const typeName = shapeName.replace("triangle-", "");
+            const type = TRIANGLE.getTriangleType(typeName);
+            return BRUSH_SHAPES.TRIANGLE.new(type);
+        },
+        new: (triangleType) => {
+            return {
+                value: `triangle-${triangleType.value}`,
+                draw: (ctx, coords, options) => {
+                    const { row, col } = coords;
+                    const topLeftX = col * STEP;
+                    const topLeftY = row * STEP;
 
-                    ctx.beginPath();
-                    triangleType.handle(ctx, topLeftX, topLeftY)
-                    ctx.closePath();
+                    if (!options.style || options.style === "fill") {
+                        ctx.fillStyle = options.color ?? "black";
 
-                    ctx.fill();
-                } else {
-                    if (options.style === "dashed") {
-                        ctx.setLineDash([7, 3]);
+                        ctx.beginPath();
+                        triangleType.handle(ctx, topLeftX, topLeftY)
+                        ctx.closePath();
+
+                        ctx.fill();
                     } else {
-                        ctx.setLineDash([])
+                        if (options.style === "dashed") {
+                            ctx.setLineDash([7, 3]);
+                        } else {
+                            ctx.setLineDash([])
+                        }
+                        ctx.strokeStyle = options.color ?? "black";
+
+                        ctx.beginPath();
+                        triangleType.handle(ctx, topLeftX, topLeftY)
+                        ctx.closePath();
+
+                        ctx.stroke();
                     }
-                    ctx.strokeStyle = options.color ?? "black";
-
-                    ctx.beginPath();
-                    triangleType.handle(ctx, topLeftX, topLeftY)
-                    ctx.closePath();
-
-                    ctx.stroke();
                 }
             }
         }

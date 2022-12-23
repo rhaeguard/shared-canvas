@@ -33,10 +33,10 @@ function setupBrushShapes(drawFunction) {
     const options = [
         ["circle", circle, BRUSH_SHAPES.CIRCLE],
         ["square", square, BRUSH_SHAPES.SQUARE],
-        ["acute triangle 1", atbl, BRUSH_SHAPES.TRIANGLE(TRIANGLE.ACUTE_BL)],
-        ["acute triangle 2", atbr, BRUSH_SHAPES.TRIANGLE(TRIANGLE.ACUTE_BR)],
-        ["acute triangle 3", attl, BRUSH_SHAPES.TRIANGLE(TRIANGLE.ACUTE_TL)],
-        ["acute triangle 4", attr, BRUSH_SHAPES.TRIANGLE(TRIANGLE.ACUTE_TR)],
+        ["acute triangle 1", atbl, BRUSH_SHAPES.TRIANGLE.new(TRIANGLE.ACUTE_BL)],
+        ["acute triangle 2", atbr, BRUSH_SHAPES.TRIANGLE.new(TRIANGLE.ACUTE_BR)],
+        ["acute triangle 3", attl, BRUSH_SHAPES.TRIANGLE.new(TRIANGLE.ACUTE_TL)],
+        ["acute triangle 4", attr, BRUSH_SHAPES.TRIANGLE.new(TRIANGLE.ACUTE_TR)],
     ];
 
     options.forEach(([name, src, shape]) => {
@@ -155,7 +155,7 @@ function getRowColPair(event) {
                 col,
                 user,
                 {
-                    shape: userCanvasState.currentShape,
+                    shapeName: userCanvasState.currentShape.value,
                     color: userCanvasState.currentColor,
                     style: userCanvasState.currentStyle
                 },
@@ -193,7 +193,7 @@ function getRowColPair(event) {
                 col,
                 user,
                 {
-                    shape: userCanvasState.currentShape,
+                    shapeName: userCanvasState.currentShape.value,
                     color: userCanvasState.currentColor,
                     style: userCanvasState.currentStyle
                 },
@@ -224,13 +224,23 @@ function getRowColPair(event) {
         }
     }
 
+    function getShape(shapeName) {
+        for (const shape of Object.values(BRUSH_SHAPES)) {
+            const result = shape.getShape(shapeName)
+            if (result) {
+                return result;
+            }
+        }
+        return null
+    }
+
     function draw() {
         // clear
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
         // re-draw
         drawGridlines(ctx);
         for (let i = 0; i < localCollectiveState.positions.length; i++) {
-            localCollectiveState.positions[i].shape.draw(
+            getShape(localCollectiveState.positions[i].shapeName)?.draw(
                 ctx,
                 localCollectiveState.positions[i].position,
                 {
