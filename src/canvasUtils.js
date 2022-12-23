@@ -1,6 +1,9 @@
 import { WIDTH, HEIGHT, STEP } from "./constants";
 
 export function drawGridlines(ctx) {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'lightgrey';
 

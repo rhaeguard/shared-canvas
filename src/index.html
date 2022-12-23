@@ -13,11 +13,11 @@
     <style>
         body {
             margin: 0;
+            font-family: 'Chivo Mono', monospace;
         }
 
         .container {
             display: flex;
-            font-family: 'Chivo Mono', monospace;
         }
 
         #main-canvas {
@@ -46,9 +46,50 @@
             display: flex;
             align-items: center;
         }
+
+        #shapes-popup {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid black;
+            box-sizing: border-box;
+            padding: 1%;
+            width: 250px;
+        }
+
+        .shapes {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .item img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .item:hover {
+            cursor: pointer;
+            background-color: lightgray;
+        }
+
+        .style {
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
+    <div id="shapes-popup">
+        <div class="shapes"></div>
+        <div class="style">
+            <input type="radio" id="style-fill" name="fill-style" value="fill" checked>
+            <label for="style-fill">fill</label>
+            <input type="radio" id="style-dashed" name="fill-style" value="dashed">
+            <label for="style-dashed">dashed</label>
+            <input type="radio" id="style-line" name="fill-style" value="line">
+            <label for="style-line">line</label>
+        </div>
+    </div>
     <div class="container">
         <canvas id="main-canvas"></canvas>
         <div class="sidebar">
