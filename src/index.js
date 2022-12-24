@@ -7,7 +7,7 @@ import attr from './imgs/acute-tr-top-right.png'
 
 import * as Y from 'yjs'
 import { WebrtcProvider } from 'y-webrtc'
-import { BRUSH_SHAPES, TOOLS, TRIANGLE } from './tools'
+import { BRUSH_SHAPES, CELL_OWNERSHIP, TOOLS, TRIANGLE } from './tools'
 import { drawGridlines } from './canvasUtils'
 import { generateRandomUser } from './generalUtils'
 import { WIDTH, HEIGHT, STEP } from './constants'
@@ -173,11 +173,15 @@ function getRowColPair(event) {
     })
 
     function isCellFree(row, col) {
-        return !localCollectiveState.positions.some(
-            (element) =>
-                row === element.position.row &&
-                col === element.position.col &&
-                user.id !== element.user.id)
+        for (const element of localCollectiveState.positions) {
+            if (row === element.position.row &&
+                col === element.position.col) {
+                return user.id === element.user.id 
+                        ? CELL_OWNERSHIP.ME
+                        : CELL_OWNERSHIP.OTHERS
+            }
+        }
+        return CELL_OWNERSHIP.NOONE
     }
 
     function setPosition(e) {

@@ -4,8 +4,8 @@ export const TOOLS = {
     BRUSH: {
         value: "brush",
         // handle returns an array of 2 elements [didModify, modifiedState]
-        handle: (row, col, user, { shapeName, color, style }, localState, isCellFree) => {
-            if (isCellFree) {
+        handle: (row, col, user, { shapeName, color, style }, localState, cellAvailability) => {
+            if (cellAvailability === CELL_OWNERSHIP.NOONE) {
                 localState.positions.push({
                     user: user,
                     color: color,
@@ -16,6 +16,17 @@ export const TOOLS = {
                     }
                 })
                 return [true, localState]
+            } else if (cellAvailability === CELL_OWNERSHIP.ME) {
+                const index = localState.positions.findIndex(element => row === element.position.row && col === element.position.col)
+                localState.positions[index] = {
+                    user: user,
+                    color: color,
+                    shapeName: shapeName,
+                    style: style,
+                    position: {
+                        row, col
+                    }
+                }
             }
             return [false, localState]
         },
@@ -23,8 +34,8 @@ export const TOOLS = {
     },
     ERASER: {
         value: "eraser",
-        handle: (row, col, user, { shape, color, style }, localState, isCellFree) => {
-            if (isCellFree) {
+        handle: (row, col, user, { shapeName, color, style }, localState, cellAvailability) => {
+            if (cellAvailability === CELL_OWNERSHIP.ME) {
                 const index = localState.positions.findIndex(({ position }) => position.row === row && position.col === col)
                 if (index > -1) {
                     localState.positions.splice(index, 1);
@@ -68,7 +79,7 @@ export const TRIANGLE = {
         }
     },
     ACUTE_TL: {
-        value: "acll",
+        value: "actl",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX, topLeftY);
             ctx.lineTo(topLeftX, topLeftY + STEP);
@@ -182,4 +193,10 @@ export const BRUSH_SHAPES = {
         }
     }
 
+}
+
+export const CELL_OWNERSHIP = {
+    NOONE: "NOONE",
+    OTHERS: "OTHERS",
+    ME: "ME"
 }
