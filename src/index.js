@@ -110,8 +110,44 @@ function getRowColPair(event) {
     return [row, col];
 }
 
+function setupCollaboratorsTab() {
+    const ul = document.getElementById("collaborators-list");
+    ul.innerHTML = "";
+    const li = document.createElement("li");
+    li.innerText = `You are here!`
+    ul.appendChild(li);
+}
+
 (function () {
     const user = generateRandomUser()
+    setupCollaboratorsTab();
+    const allUsers = yDoc.getMap("availableUsers")
+    setInterval(() => {
+        allUsers.set(`${user.id}`, {
+            user,
+            lastSeen: new Date().toString()
+        });
+    }, 5000);
+
+    allUsers.observe(() => {
+        const ul = document.getElementById("collaborators-list");
+        ul.innerHTML = "";
+        for (const [userId, data] of allUsers.entries()) {
+            const {user: savedUser, lastSeen} = data;
+            const lastSeenMillis = Date.parse(lastSeen);
+            const nowMillis = Date.parse(new Date().toString());
+            if (nowMillis - lastSeenMillis <= 10_000) {
+                // do something
+                const li = document.createElement("li");
+                if (savedUser.id === user.id) {
+                    li.innerText = `You are here!`
+                } else {
+                    li.innerText = `User ${savedUser.id} is here!`
+                }
+                ul.appendChild(li);
+            }
+        }
+    })
 
     // set up the canvas
     const canvas = setupCanvas();
@@ -125,10 +161,10 @@ function getRowColPair(event) {
     const DRAW_EVENT = new Event('draw');
 
     // set up the CRDT map
-    const ymap = yDoc.getMap("collectiveState");
+    const remoteCollectiveState = yDoc.getMap("collectiveState");
     // listen for changes
-    ymap.observe(() => {
-        localCollectiveState = { ...ymap.get("collectiveState") }
+    remoteCollectiveState.observe(() => {
+        localCollectiveState = { ...remoteCollectiveState.get("collectiveState") }
         draw()
     })
 
@@ -137,7 +173,7 @@ function getRowColPair(event) {
     // listen to the draw event we created
     canvas.addEventListener('draw', (e) => {
         // set the local state as the collective state
-        ymap.set("collectiveState", localCollectiveState);
+        remoteCollectiveState.set("collectiveState", localCollectiveState);
         draw()
     }, false);
 
