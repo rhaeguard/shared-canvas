@@ -110,17 +110,22 @@ function getRowColPair(event) {
     return [row, col];
 }
 
-function setupCollaboratorsTab() {
-    const ul = document.getElementById("collaborators-list");
-    ul.innerHTML = "";
-    const li = document.createElement("li");
-    li.innerText = `You are here!`
-    ul.appendChild(li);
+function addNewCollaborator(collaboratorName, isMe, clearAll) {
+    const collaboratorsDiv = document.getElementById("collaborators");
+    if (clearAll) {
+        collaboratorsDiv.innerHTML = "";
+    }
+    const newPerson = document.createElement("div");
+    newPerson.innerText = collaboratorName.trim().split(" ").map(e => e.charAt(0)).join("")
+    newPerson.title = isMe ? `You(${collaboratorName})` : collaboratorName;
+    const classes = isMe ? ["collaborator", "currentUser"] : ["collaborator"]
+    newPerson.classList.add(...classes);
+    collaboratorsDiv.appendChild(newPerson);
 }
 
 (function () {
     const user = generateRandomUser()
-    setupCollaboratorsTab();
+    addNewCollaborator(user.name, true)
     const allUsers = yDoc.getMap("availableUsers")
     setInterval(() => {
         allUsers.set(`${user.id}`, {
@@ -130,21 +135,13 @@ function setupCollaboratorsTab() {
     }, 5000);
 
     allUsers.observe(() => {
-        const ul = document.getElementById("collaborators-list");
-        ul.innerHTML = "";
+        addNewCollaborator(user.name, true, true)
         for (const [userId, data] of allUsers.entries()) {
             const {user: savedUser, lastSeen} = data;
             const lastSeenMillis = Date.parse(lastSeen);
             const nowMillis = Date.parse(new Date().toString());
-            if (nowMillis - lastSeenMillis <= 10_000) {
-                // do something
-                const li = document.createElement("li");
-                if (savedUser.id === user.id) {
-                    li.innerText = `You are here!`
-                } else {
-                    li.innerText = `User ${savedUser.id} is here!`
-                }
-                ul.appendChild(li);
+            if (nowMillis - lastSeenMillis <= 10_000 && savedUser.id !== user.id) {
+                addNewCollaborator(savedUser.name, false, false)
             }
         }
     })

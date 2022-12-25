@@ -13,6 +13,7 @@
     "vite": "^4.0.1"
   },
   "dependencies": {
+    "unique-names-generator": "^4.7.1",
     "uuidv4": "^6.2.13",
     "y-webrtc": "^10.2.3",
     "yjs": "^13.5.43"

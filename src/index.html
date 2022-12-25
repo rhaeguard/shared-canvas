@@ -26,6 +26,7 @@
 
         .sidebar {
             padding-left: 1%;
+            flex: 1;
         }
 
         #color-picker-input {
@@ -76,6 +77,34 @@
             display: flex;
             justify-content: center;
         }
+
+        #collaborators {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: start;
+            gap: 2%;
+        }
+
+        .collaborator {
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: larger;
+            background-color: purple;
+            border-radius: 50%;
+            text-align: center;
+            padding: 1%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1%;
+            cursor: pointer;
+        }
+
+        .currentUser {
+            background-color: orange !important;
+        }
     </style>
 </head>
 <body>
@@ -111,9 +140,7 @@
                 <label for="tool-eraser">Eraser</label>
             </div>
             <h2>Collaborators</h2>
-            <div id="collaborators">
-                <ul id="collaborators-list"></ul>
-            </div>
+            <div id="collaborators"></div>
         </div>
     </div>
     <script type="module" src="./index.js"></script>
