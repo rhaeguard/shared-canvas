@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -27,6 +28,8 @@
         .sidebar {
             padding-left: 1%;
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         #color-picker-input {
@@ -36,7 +39,7 @@
 
         #color-picker-span {
             width: 50px;
-            height: 50px; 
+            height: 50px;
             border-radius: 50%;
             overflow: hidden;
             background-color: black;
@@ -105,8 +108,14 @@
         .currentUser {
             background-color: orange !important;
         }
+
+        #credits {
+            font-size: small;
+            padding-left: 1%;
+        }
     </style>
 </head>
+
 <body>
     <div id="shapes-popup">
         <div class="shapes"></div>
@@ -125,7 +134,7 @@
             <h1>Settings</h1>
             <div class="color-picker-wrapper">
                 <label for="color-picker-span" id="color-picker-label">
-                    Pick a color: 
+                    Pick a color:
                     <span id="color-picker-span">
                         <input type="color" id="color-picker-input" name="color-picker">
                     </span>
@@ -143,6 +152,12 @@
             <div id="collaborators"></div>
         </div>
     </div>
+    <div id="credits">
+        <p><strong>Credits:</strong> <a href="https://icons8.com">Icons8</a> cursor icons (<a target="_blank"
+            href="https://icons8.com/icon/AAJyeVaForS6/cursor">#1</a>, <a target="_blank"
+            href="https://icons8.com/icon/plnVoJxRxbYI/cursor">#2</a>)</p>
+    </div>
     <script type="module" src="./index.js"></script>
 </body>
+
 </html>

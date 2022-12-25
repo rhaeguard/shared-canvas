@@ -8,7 +8,7 @@ function generateRandomNumber() {
 export function generateRandomUser() {
     const existingUserStr = localStorage?.getItem(LOCAL_STORAGE_USER_KEY);
 
-    if (existingUserStr && false) return JSON.parse(existingUserStr);
+    if (existingUserStr) return JSON.parse(existingUserStr);
 
     const newUser = {
         id: generateRandomNumber(),
