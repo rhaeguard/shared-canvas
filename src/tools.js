@@ -103,11 +103,12 @@ export const BRUSH_SHAPES = {
             if (!shapeName || shapeName !== "circle") return null
             return BRUSH_SHAPES.CIRCLE;
         },
-        draw: (ctx, coords, options) => {
+        draw: (ctx, coords, center, options) => {
             const { row, col } = coords;
 
-            const x = col * STEP + STEP / 2;
-            const y = row * STEP + STEP / 2;
+            const [cx, cy] = center;
+            const x = cx + (col > 0 ? col - 1 : col) * STEP + STEP / 2;
+            const y = cy + (row > 0 ? row - 1 : row) * STEP + STEP / 2;
             const radius = STEP / 2;
 
             if (!options.style || options.style === "fill") {
@@ -134,11 +135,14 @@ export const BRUSH_SHAPES = {
             if (!shapeName || shapeName !== "square") return null
             return BRUSH_SHAPES.SQUARE;
         },
-        draw: (ctx, coords, options) => {
+        draw: (ctx, coords, center, options) => {
             const { row, col } = coords;
+            const [cx, cy] = center;
             if (!options.style || options.style === "fill") {
                 ctx.fillStyle = options.color ?? "black";
-                ctx.fillRect(col * STEP, row * STEP, STEP, STEP);
+                const x = cx + (col > 0 ? col - 1 : col) * STEP;
+                const y = cy + (row > 0 ? row - 1 : row) * STEP;
+                ctx.fillRect(x, y, STEP, STEP);
             } else {
                 if (options.style === "dashed") {
                     ctx.setLineDash([7, 3]);
@@ -146,7 +150,9 @@ export const BRUSH_SHAPES = {
                     ctx.setLineDash([])
                 }
                 ctx.strokeStyle = options.color ?? "black";
-                ctx.strokeRect(col * STEP, row * STEP, STEP, STEP);
+                const x = cx + (col > 0 ? col - 1 : col) * STEP;
+                const y = cy + (row > 0 ? row - 1 : row) * STEP;
+                ctx.strokeRect(x, y, STEP, STEP);
             }
         }
     },
@@ -161,10 +167,11 @@ export const BRUSH_SHAPES = {
         new: (triangleType) => {
             return {
                 value: `triangle-${triangleType.value}`,
-                draw: (ctx, coords, options) => {
+                draw: (ctx, coords, center, options) => {
                     const { row, col } = coords;
-                    const topLeftX = col * STEP;
-                    const topLeftY = row * STEP;
+                    const [cx, cy] = center;
+                    const topLeftX = cx + (col > 0 ? col - 1 : col) * STEP;
+                    const topLeftY = cy + (row > 0 ? row - 1 : row) * STEP;
 
                     if (!options.style || options.style === "fill") {
                         ctx.fillStyle = options.color ?? "black";

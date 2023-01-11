@@ -19,8 +19,10 @@ let localCollectiveState = {
     positions: []
 };
 
-const userCanvasState = {
+export const userCanvasState = {
     highlightedCell: null,
+    positionClickedOn: null,
+    currentCenter: [(WIDTH) / 2, (HEIGHT) / 2],
     isMouseDown: false,
     currentTool: TOOLS.BRUSH,
     currentColor: "black",
@@ -104,8 +106,19 @@ function changeCanvasCursor(canvas) {
 function getRowColPair(event) {
     const [x, y] = [event.clientX, event.clientY];
 
-    const row = Math.floor(y / STEP);
-    const col = Math.floor(x / STEP);
+    const [cx, cy] = userCanvasState.currentCenter;
+
+    const dx = Math.abs(cx - x);
+    const dy = Math.abs(cy - y);
+
+    const rawRow = Math.ceil(dy / STEP);
+    const rawCol = Math.ceil(dx / STEP);
+
+    const sigX = cx - x > 0 ? -1 : 1;
+    const sigY = cy - y > 0 ? -1 : 1;
+
+    const col = sigX * rawCol;
+    const row = sigY * rawRow;
 
     return [row, col];
 }
@@ -165,7 +178,12 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
         draw()
     })
 
-    drawGridlines(ctx);
+    drawGridlines(ctx, userCanvasState.currentCenter[0], userCanvasState.currentCenter[1]);
+
+    const changeCenter = (x, y) => {
+        userCanvasState.currentCenter = [x, y];
+        canvas.dispatchEvent(DRAW_EVENT);
+    };
 
     // listen to the draw event we created
     canvas.addEventListener('draw', (e) => {
@@ -176,7 +194,45 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
 
     // when mouse clicks, do the appropriate action
     canvas.addEventListener('mousedown', setPosition);
+    canvas.addEventListener('contextmenu', (e) => {
+        const shapesPopupDiv = document.getElementById("shapes-popup");
+
+        const closeShapesPopup = (event) => {
+            if (event.key === "Escape") {
+                shapesPopupDiv.style.display = "none";
+            }
+            document.removeEventListener("click", closeShapesPopup);
+        };
+
+        e.preventDefault();
+        e.stopPropagation();
+        document.addEventListener('keydown', closeShapesPopup);
+        const x = e.offsetX + 15;
+        const y = e.offsetY + 15;
+        shapesPopupDiv.style.display = "block";
+        shapesPopupDiv.style.top = `${y}px`;
+        shapesPopupDiv.style.left = `${x}px`;
+        return false;
+    });
+
     canvas.addEventListener('mousemove', (e) => {
+        if (e.ctrlKey && e.buttons === 1) {
+            const [x, y] = [e.clientX, e.clientY];
+
+            if (userCanvasState.cellClickedOn) {
+                const [row, col] = userCanvasState.cellClickedOn;
+                const cx = x - (col > 0 ? col - 1 : col) * STEP;
+                const cy = y - (row > 0 ? row - 1 : row) * STEP;
+                changeCenter(cx, cy);
+            } else {
+                userCanvasState.cellClickedOn = getRowColPair(e);
+            }
+        } else {
+            userCanvasState.cellClickedOn = null;
+        }
+        const [x, y] = [e.clientX, e.clientY];
+        drawGridlines(ctx, x, y);
+
         const [row, col] = getRowColPair(e);
 
         userCanvasState.highlightedCell = { row, col }
@@ -223,7 +279,7 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
 
         const [row, col] = getRowColPair(e);
 
-        if (e.buttons === 1) {
+        if (e.buttons === 1 && !e.ctrlKey) {
             userCanvasState.isMouseDown = true;
             const [didModify, modifiedState] = userCanvasState.currentTool.handle(
                 row,
@@ -240,25 +296,7 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
             if (didModify) {
                 canvas.dispatchEvent(DRAW_EVENT);
             }
-        } else {
-            const shapesPopupDiv = document.getElementById("shapes-popup");
-
-            const closeShapesPopup = (event) => {
-                if (event.key === "Escape") {
-                    shapesPopupDiv.style.display = "none";
-                }
-                document.removeEventListener("click", closeShapesPopup);
-            };
-
-            e.preventDefault();
-            e.stopPropagation();
-            document.addEventListener('keydown', closeShapesPopup);
-            const x = e.offsetX + 15;
-            const y = e.offsetY + 15;
-            shapesPopupDiv.style.display = "block";
-            shapesPopupDiv.style.top = `${y}px`;
-            shapesPopupDiv.style.left = `${x}px`;
-        }
+        } 
     }
 
     function getShape(shapeName) {
@@ -275,11 +313,12 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
         // clear
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
         // re-draw
-        drawGridlines(ctx);
+        drawGridlines(ctx, userCanvasState.currentCenter[0], userCanvasState.currentCenter[1]);
         for (let i = 0; i < localCollectiveState.positions.length; i++) {
             getShape(localCollectiveState.positions[i].shapeName)?.draw(
                 ctx,
                 localCollectiveState.positions[i].position,
+                userCanvasState.currentCenter,
                 {
                     color: localCollectiveState.positions[i].color,
                     style: localCollectiveState.positions[i].style
@@ -288,7 +327,7 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
         }
 
         if (userCanvasState.highlightedCell) {
-            userCanvasState.currentShape.draw(ctx, userCanvasState.highlightedCell, { style: "dashed" })
+            userCanvasState.currentShape.draw(ctx, userCanvasState.highlightedCell, userCanvasState.currentCenter, { style: "dashed" })
         }
     }
 })();
