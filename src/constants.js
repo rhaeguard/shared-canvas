@@ -13,7 +13,8 @@ export const DIMENSIONS = {
 
 export const CURSORS = {
     BRUSH: brushSelect,
-    ERASER: eraserSelect
+    ERASER: eraserSelect,
+    HAND: 'grab'
 }
 
 export const LOCAL_STORAGE_USER_KEY = "USER"

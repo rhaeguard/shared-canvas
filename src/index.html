@@ -60,21 +60,6 @@
             align-items: center;
         }
 
-        #shapes-popup {
-            display: none;
-            position: absolute;
-            background-color: white;
-            border: 1px solid black;
-            box-sizing: border-box;
-            padding: 1%;
-            width: 250px;
-        }
-
-        .shapes {
-            display: flex;
-            justify-content: space-between;
-        }
-
         .item img {
             width: 32px;
             height: 32px;
@@ -137,7 +122,7 @@
             background-color: #eeeeee;
         }
 
-        #logo > h2 {
+        #logo>h2 {
             margin: 0;
         }
 
@@ -154,75 +139,129 @@
             flex-direction: row;
             justify-content: space-around;
         }
-        
-        #toolbar > .canvas-tool {
-            font-size:20px;
+
+        .toolbar-item {
+            font-size: 20px;
             border: none;
             outline: none;
             transition: 0.3s;
+            color: rgb(156, 153, 153);
         }
 
-        #toolbar > .canvas-tool:hover {
+        .toolbar-item:hover {
             border: none;
             outline: none;
             background-color: #c2c2c2;
             cursor: pointer;
         }
 
+        .selected-canvas-tool {
+            color: black !important;
+        }
+
+        .shapes-wrapper {
+            position: relative;
+            display: flex;
+        }
+
+        .shapes {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            width: 200px;
+            bottom: 50px;
+            z-index: 1;
+        }
+
+        .shapes-wrapper:hover .shapes {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .styles-wrapper {
+            position: relative;
+            display: flex;
+        }
+
+        .styles {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            width: 100px;
+            text-align: center;
+            bottom: 50px;
+            z-index: 1;
+        }
+
+        .styles span {
+            padding: 1%;
+            display: block;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .styles span:hover {
+            background-color: #c2c2c2;
+        }
+
+        .styles-wrapper:hover .styles {
+            display: block;
+        }
+
+        .selected-fill-style {
+            background-color: #c2c2c2 !important;
+        }
     </style>
 </head>
 
 <body>
-    <div id="shapes-popup">
-        <h4>Tools</h4>
-        <div class="tools">
-            <input type="radio" id="tool-brush" name="tool" value="brush" checked>
-            <label for="tool-brush">Brush</label>
-            <input type="radio" id="tool-eraser" name="tool" value="eraser">
-            <label for="tool-eraser">Eraser</label>
-        </div>
-        <hr>
-        <div class="color-picker-wrapper">
-            <label for="color-picker-span" id="color-picker-label">
-                Pick a color:
-                <span id="color-picker-span">
-                    <input type="color" id="color-picker-input" name="color-picker">
-                </span>
-            </label>
-        </div>
-        <hr>
-        <div class="shapes"></div>
-        <hr>
-        <div class="style">
-            <input type="radio" id="style-fill" name="fill-style" value="fill" checked>
-            <label for="style-fill">fill</label>
-            <input type="radio" id="style-dashed" name="fill-style" value="dashed">
-            <label for="style-dashed">dashed</label>
-            <input type="radio" id="style-line" name="fill-style" value="line">
-            <label for="style-line">line</label>
-        </div>
-    </div>
     <div id="logo">
         <h2>shared canvas</h2>
     </div>
     <div class="container">
         <canvas id="main-canvas"></canvas>
     </div>
-    <div class="sidebar"><div id="collaborators"></div></div>
+    <div class="sidebar">
+        <div id="collaborators"></div>
+    </div>
 
 
     <div id="toolbar">
-        <button class="canvas-tool">
+        <button class="toolbar-item canvas-tool" data-tool-name="brush" title="Brush">
             <i class="lni lni-brush"></i>
         </button>
 
-        <button class="canvas-tool">
+        <button class="toolbar-item canvas-tool" data-tool-name="eraser" title="Eraser">
             <i class="lni lni-eraser"></i>
         </button>
 
-        <button class="canvas-tool">
+        <button class="toolbar-item canvas-tool" data-tool-name="hand" title="Hand tool">
             <i class="lni lni-hand"></i>
         </button>
+
+        <span id="color-picker-span" title="Color picker">
+            <input type="color" id="color-picker-input" name="color-picker">
+        </span>
+
+        <div class="shapes-wrapper">
+            <button class="toolbar-item" title="Shapes">
+                <i class="lni lni-diamond-shape"></i>
+            </button>
+
+            <div class="shapes"></div>
+        </div>
+
+        <div class="styles-wrapper">
+            <button class="toolbar-item" title="Fill/border">
+                <i class="lni lni-line-dashed"></i>
+            </button>
+
+            <div class="styles">
+                <span class="fill-style" data-fill-style-value="fill"><h4>Fill</h4></span>
+                <span class="fill-style" data-fill-style-value="dashed"><h4>Dashed</h4></span>
+                <span class="fill-style" data-fill-style-value="line"><h4>Solid</h4></span>
+            </div>
+        </div>
     </div>
 
     <div id="credits">

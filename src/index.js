@@ -31,7 +31,7 @@ export const userCanvasState = {
 }
 
 function setupBrushShapes(drawFunction) {
-    const shapesDiv = document.querySelector("#shapes-popup .shapes")
+    const shapesDiv = document.querySelector(".shapes")
     const options = [
         ["circle", circle, BRUSH_SHAPES.CIRCLE],
         ["square", square, BRUSH_SHAPES.SQUARE],
@@ -75,18 +75,30 @@ function setupColorPicker() {
 }
 
 function setupTools(canvas) {
-    for (let rb of document.querySelectorAll(`input[name="tool"]`)) {
-        rb.addEventListener('change', (e) => {
-            userCanvasState.currentTool = TOOLS.getTool(e.target.value);
-            changeCanvasCursor(canvas)
+    const allBtns = document.querySelectorAll(".canvas-tool");
+    for (let btn of allBtns) {
+        if (btn.dataset.toolName === userCanvasState.currentTool.value) {
+            btn.classList.add("selected-canvas-tool");
+        }
+        btn.addEventListener('click', (e) => {
+            userCanvasState.currentTool = TOOLS.getTool(btn.dataset.toolName);
+            changeCanvasCursor(canvas);
+            allBtns.forEach(aBtn => aBtn.classList.remove("selected-canvas-tool"));
+            btn.classList.add("selected-canvas-tool");
         })
     }
 }
 
 function setupFillStyle(canvas) {
-    for (let rb of document.querySelectorAll(`input[name="fill-style"]`)) {
-        rb.addEventListener('change', (e) => {
-            userCanvasState.currentStyle = e.target.value;
+    const allSpans = document.querySelectorAll(`.fill-style`);
+    for (let span of allSpans) {
+        if (span.dataset.fillStyleValue ===  userCanvasState.currentStyle) {
+            span.classList.add("selected-fill-style");
+        }
+        span.addEventListener('click', (e) => {
+            userCanvasState.currentStyle = span.dataset.fillStyleValue;
+            allSpans.forEach(aSpan => aSpan.classList.remove("selected-fill-style"));
+            span.classList.add("selected-fill-style");
         })
     }
 }
@@ -100,7 +112,11 @@ function setupCanvas() {
 }
 
 function changeCanvasCursor(canvas) {
-    canvas.style.cursor = `url('${userCanvasState.currentTool.cursorUrl}'), auto`;
+    if (userCanvasState.currentTool.cursorUrl.endsWith("png")) {
+        canvas.style.cursor = `url('${userCanvasState.currentTool.cursorUrl}'), auto`;        
+    } else {
+        canvas.style.cursor = userCanvasState.currentTool.cursorUrl;        
+    }
 }
 
 function getRowColPair(event) {
@@ -228,7 +244,7 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
     });
 
     canvas.addEventListener('mousemove', (e) => {
-        if (e.ctrlKey && e.buttons === 1) {
+        if (userCanvasState.currentTool === TOOLS.HAND && e.buttons === 1) {
             const [x, y] = [e.clientX, e.clientY];
 
             if (userCanvasState.cellClickedOn) {

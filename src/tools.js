@@ -46,8 +46,16 @@ export const TOOLS = {
         },
         cursorUrl: CURSORS.ERASER
     },
+    HAND: {
+        value: "hand",
+        handle: (row, col, user, { shapeName, color, style }, localState, cellAvailability) => {
+            return [false, localState]
+        },
+        cursorUrl: CURSORS.HAND
+    },
     getTool: (value) => {
         if (TOOLS.ERASER.value === value) return TOOLS.ERASER
+        if (TOOLS.HAND.value === value) return TOOLS.HAND
         return TOOLS.BRUSH
     }
 };
