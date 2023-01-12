@@ -10,15 +10,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono&display=swap" rel="stylesheet">
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
 
     <style>
         body {
             margin: 0;
             font-family: 'Chivo Mono', monospace;
+            overflow: hidden;
         }
 
         .container {
             display: flex;
+            width: 100%;
+            height: 100%;
         }
 
         #main-canvas {
@@ -26,10 +30,14 @@
         }
 
         .sidebar {
-            padding-left: 1%;
-            flex: 1;
             display: flex;
             flex-direction: column;
+            position: absolute;
+            z-index: 1000;
+            background-color: #eeeeee;
+            padding: 1%;
+            right: 2%;
+            top: 2%;
         }
 
         #color-picker-input {
@@ -85,7 +93,6 @@
         #collaborators {
             display: flex;
             flex-direction: row;
-            flex-wrap: wrap;
             justify-content: start;
             gap: 2%;
         }
@@ -111,15 +118,81 @@
         }
 
         #credits {
+            position: absolute;
+            z-index: 1000;
             font-size: small;
             padding-left: 1%;
+            bottom: 2%;
+            left: 1%;
+            background-color: #eeeeee;
         }
+
+        #logo {
+            position: absolute;
+            z-index: 1000;
+            font-size: small;
+            padding: 1%;
+            top: 2%;
+            left: 1%;
+            background-color: #eeeeee;
+        }
+
+        #logo > h2 {
+            margin: 0;
+        }
+
+        #toolbar {
+            position: absolute;
+            z-index: 1001;
+            font-size: small;
+            padding: 1%;
+            bottom: 2%;
+            right: 40%;
+            left: 40%;
+            background-color: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+        
+        #toolbar > .canvas-tool {
+            font-size:20px;
+            border: none;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #toolbar > .canvas-tool:hover {
+            border: none;
+            outline: none;
+            background-color: #c2c2c2;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
 <body>
     <div id="shapes-popup">
+        <h4>Tools</h4>
+        <div class="tools">
+            <input type="radio" id="tool-brush" name="tool" value="brush" checked>
+            <label for="tool-brush">Brush</label>
+            <input type="radio" id="tool-eraser" name="tool" value="eraser">
+            <label for="tool-eraser">Eraser</label>
+        </div>
+        <hr>
+        <div class="color-picker-wrapper">
+            <label for="color-picker-span" id="color-picker-label">
+                Pick a color:
+                <span id="color-picker-span">
+                    <input type="color" id="color-picker-input" name="color-picker">
+                </span>
+            </label>
+        </div>
+        <hr>
         <div class="shapes"></div>
+        <hr>
         <div class="style">
             <input type="radio" id="style-fill" name="fill-style" value="fill" checked>
             <label for="style-fill">fill</label>
@@ -129,34 +202,33 @@
             <label for="style-line">line</label>
         </div>
     </div>
+    <div id="logo">
+        <h2>shared canvas</h2>
+    </div>
     <div class="container">
         <canvas id="main-canvas"></canvas>
-        <div class="sidebar">
-            <h1>Settings</h1>
-            <div class="color-picker-wrapper">
-                <label for="color-picker-span" id="color-picker-label">
-                    Pick a color:
-                    <span id="color-picker-span">
-                        <input type="color" id="color-picker-input" name="color-picker">
-                    </span>
-                </label>
-            </div>
-            <hr>
-            <h2>Tools</h2>
-            <div class="tools">
-                <input type="radio" id="tool-brush" name="tool" value="brush" checked>
-                <label for="tool-brush">Brush</label>
-                <input type="radio" id="tool-eraser" name="tool" value="eraser">
-                <label for="tool-eraser">Eraser</label>
-            </div>
-            <h2>Collaborators</h2>
-            <div id="collaborators"></div>
-        </div>
     </div>
+    <div class="sidebar"><div id="collaborators"></div></div>
+
+
+    <div id="toolbar">
+        <button class="canvas-tool">
+            <i class="lni lni-brush"></i>
+        </button>
+
+        <button class="canvas-tool">
+            <i class="lni lni-eraser"></i>
+        </button>
+
+        <button class="canvas-tool">
+            <i class="lni lni-hand"></i>
+        </button>
+    </div>
+
     <div id="credits">
         <p><strong>Credits:</strong> <a href="https://icons8.com">Icons8</a> cursor icons (<a target="_blank"
-            href="https://icons8.com/icon/AAJyeVaForS6/cursor">#1</a>, <a target="_blank"
-            href="https://icons8.com/icon/plnVoJxRxbYI/cursor">#2</a>)</p>
+                href="https://icons8.com/icon/AAJyeVaForS6/cursor">#1</a>, <a target="_blank"
+                href="https://icons8.com/icon/plnVoJxRxbYI/cursor">#2</a>)</p>
     </div>
     <script type="module" src="./index.js"></script>
 </body>

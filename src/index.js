@@ -10,7 +10,7 @@ import { WebrtcProvider } from 'y-webrtc'
 import { BRUSH_SHAPES, CELL_OWNERSHIP, TOOLS, TRIANGLE } from './tools'
 import { drawGridlines } from './canvasUtils'
 import { generateRandomUser } from './generalUtils'
-import { WIDTH, HEIGHT, STEP } from './constants'
+import { DIMENSIONS } from './constants'
 
 const yDoc = new Y.Doc()
 const webRtcProvider = new WebrtcProvider('shared-canvas', yDoc)
@@ -22,7 +22,7 @@ let localCollectiveState = {
 export const userCanvasState = {
     highlightedCell: null,
     positionClickedOn: null,
-    currentCenter: [(WIDTH) / 2, (HEIGHT) / 2],
+    currentCenter: [(DIMENSIONS.WIDTH) / 2, (DIMENSIONS.HEIGHT) / 2],
     isMouseDown: false,
     currentTool: TOOLS.BRUSH,
     currentColor: "black",
@@ -93,8 +93,8 @@ function setupFillStyle(canvas) {
 
 function setupCanvas() {
     const canvas = document.getElementById("main-canvas");
-    canvas.height = HEIGHT;
-    canvas.width = WIDTH;
+    canvas.height = DIMENSIONS.HEIGHT;
+    canvas.width = DIMENSIONS.WIDTH;
     changeCanvasCursor(canvas);
     return canvas
 }
@@ -111,8 +111,8 @@ function getRowColPair(event) {
     const dx = Math.abs(cx - x);
     const dy = Math.abs(cy - y);
 
-    const rawRow = Math.ceil(dy / STEP);
-    const rawCol = Math.ceil(dx / STEP);
+    const rawRow = Math.ceil(dy / DIMENSIONS.STEP);
+    const rawCol = Math.ceil(dx / DIMENSIONS.STEP);
 
     const sigX = cx - x > 0 ? -1 : 1;
     const sigY = cy - y > 0 ? -1 : 1;
@@ -193,6 +193,18 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
     }, false);
 
     // when mouse clicks, do the appropriate action
+    window.onresize = (event) => {
+        event.preventDefault();
+        DIMENSIONS.HEIGHT = window.innerHeight;
+        DIMENSIONS.WIDTH = window.innerWidth;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        userCanvasState.currentCenter = [(DIMENSIONS.WIDTH) / 2, (DIMENSIONS.HEIGHT) / 2],
+        draw();
+        return false;
+    };
     canvas.addEventListener('mousedown', setPosition);
     canvas.addEventListener('contextmenu', (e) => {
         const shapesPopupDiv = document.getElementById("shapes-popup");
@@ -221,8 +233,8 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
 
             if (userCanvasState.cellClickedOn) {
                 const [row, col] = userCanvasState.cellClickedOn;
-                const cx = x - (col > 0 ? col - 1 : col) * STEP;
-                const cy = y - (row > 0 ? row - 1 : row) * STEP;
+                const cx = x - (col > 0 ? col - 1 : col) * DIMENSIONS.STEP;
+                const cy = y - (row > 0 ? row - 1 : row) * DIMENSIONS.STEP;
                 changeCenter(cx, cy);
             } else {
                 userCanvasState.cellClickedOn = getRowColPair(e);
@@ -311,7 +323,7 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
 
     function draw() {
         // clear
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx.clearRect(0, 0, DIMENSIONS.WIDTH, DIMENSIONS.HEIGHT);
         // re-draw
         drawGridlines(ctx, userCanvasState.currentCenter[0], userCanvasState.currentCenter[1]);
         for (let i = 0; i < localCollectiveState.positions.length; i++) {

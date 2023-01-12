@@ -1,10 +1,15 @@
-import { WIDTH, HEIGHT, STEP } from "./constants";
+import { DIMENSIONS } from "./constants";
 
 export function drawGridlines(ctx, cx, cy) {
+    const {
+        WIDTH,
+        HEIGHT,
+        STEP
+    } = DIMENSIONS;
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
     
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.strokeStyle = 'black';
     ctx.setLineDash([]);
 
@@ -27,6 +32,8 @@ export function drawGridlines(ctx, cx, cy) {
     ctx.moveTo(cx, cy);
     ctx.lineTo(WIDTH, cy);
     ctx.stroke();
+
+    ctx.lineWidth = 1;
 
     ////////////////////////////////////////////////////
     ctx.strokeStyle = 'lightgrey';
