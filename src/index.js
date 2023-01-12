@@ -111,11 +111,23 @@ function setupCanvas() {
     return canvas
 }
 
+function setupZoomInOut(drawFunction) {
+    document.getElementById("zoom-in").addEventListener('click', (event) => {
+        DIMENSIONS.STEP += 5;
+        drawFunction();
+    })
+
+    document.getElementById("zoom-out").addEventListener('click', (event) => {
+        DIMENSIONS.STEP -= 5;
+        drawFunction();
+    })
+}
+
 function changeCanvasCursor(canvas) {
-    if (userCanvasState.currentTool.cursorUrl.endsWith("png")) {
-        canvas.style.cursor = `url('${userCanvasState.currentTool.cursorUrl}'), auto`;        
-    } else {
+    if (userCanvasState.currentTool.cursorUrl === "grab") {
         canvas.style.cursor = userCanvasState.currentTool.cursorUrl;        
+    } else {
+        canvas.style.cursor = `url('${userCanvasState.currentTool.cursorUrl}'), auto`;        
     }
 }
 
@@ -183,6 +195,7 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
     setupTools(canvas);
     setupBrushShapes(draw);
     setupFillStyle(canvas);
+    setupZoomInOut(draw);
     // create a new event type
     const DRAW_EVENT = new Event('draw');
 
@@ -222,26 +235,6 @@ function addNewCollaborator(collaboratorName, isMe, clearAll) {
         return false;
     };
     canvas.addEventListener('mousedown', setPosition);
-    canvas.addEventListener('contextmenu', (e) => {
-        const shapesPopupDiv = document.getElementById("shapes-popup");
-
-        const closeShapesPopup = (event) => {
-            if (event.key === "Escape") {
-                shapesPopupDiv.style.display = "none";
-            }
-            document.removeEventListener("click", closeShapesPopup);
-        };
-
-        e.preventDefault();
-        e.stopPropagation();
-        document.addEventListener('keydown', closeShapesPopup);
-        const x = e.offsetX + 15;
-        const y = e.offsetY + 15;
-        shapesPopupDiv.style.display = "block";
-        shapesPopupDiv.style.top = `${y}px`;
-        shapesPopupDiv.style.left = `${x}px`;
-        return false;
-    });
 
     canvas.addEventListener('mousemove', (e) => {
         if (userCanvasState.currentTool === TOOLS.HAND && e.buttons === 1) {

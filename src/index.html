@@ -25,10 +25,6 @@
             height: 100%;
         }
 
-        #main-canvas {
-            border: 1px solid black;
-        }
-
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -211,6 +207,21 @@
         .selected-fill-style {
             background-color: #c2c2c2 !important;
         }
+
+        #zoom-wrapper {
+            position: absolute;
+            z-index: 1002;
+            bottom: 2%;
+            right: 1%;
+            background-color: #eeeeee;
+            padding: 0.5%;
+        }
+
+        #zoom-wrapper > span {
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -264,11 +275,17 @@
         </div>
     </div>
 
+    <div id="zoom-wrapper">
+        <span id="zoom-in"><i class="lni lni-plus"></i></span>
+        <span id="zoom-out"><i class="lni lni-minus"></i></span>
+    </div>
+
     <div id="credits">
         <p><strong>Credits:</strong> <a href="https://icons8.com">Icons8</a> cursor icons (<a target="_blank"
                 href="https://icons8.com/icon/AAJyeVaForS6/cursor">#1</a>, <a target="_blank"
                 href="https://icons8.com/icon/plnVoJxRxbYI/cursor">#2</a>)</p>
     </div>
+
     <script type="module" src="./index.js"></script>
 </body>
 

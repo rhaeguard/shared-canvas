@@ -1,4 +1,4 @@
-import { CURSORS, STEP } from "./constants"
+import { CURSORS, DIMENSIONS } from "./constants"
 
 export const TOOLS = {
     BRUSH: {
@@ -74,31 +74,31 @@ export const TRIANGLE = {
         value: "acbl",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX, topLeftY);
-            ctx.lineTo(topLeftX, topLeftY + STEP);
-            ctx.lineTo(topLeftX + STEP, topLeftY + STEP);
+            ctx.lineTo(topLeftX, topLeftY + DIMENSIONS.STEP);
+            ctx.lineTo(topLeftX + DIMENSIONS.STEP, topLeftY + DIMENSIONS.STEP);
         }
     },
     ACUTE_BR: {
         value: "acbr",
         handle: (ctx, topLeftX, topLeftY) => {
-            ctx.moveTo(topLeftX, topLeftY + STEP);
-            ctx.lineTo(topLeftX + STEP, topLeftY + STEP);
-            ctx.lineTo(topLeftX + STEP, topLeftY);
+            ctx.moveTo(topLeftX, topLeftY + DIMENSIONS.STEP);
+            ctx.lineTo(topLeftX + DIMENSIONS.STEP, topLeftY + DIMENSIONS.STEP);
+            ctx.lineTo(topLeftX + DIMENSIONS.STEP, topLeftY);
         }
     },
     ACUTE_TL: {
         value: "actl",
         handle: (ctx, topLeftX, topLeftY) => {
             ctx.moveTo(topLeftX, topLeftY);
-            ctx.lineTo(topLeftX, topLeftY + STEP);
-            ctx.lineTo(topLeftX + STEP, topLeftY);
+            ctx.lineTo(topLeftX, topLeftY + DIMENSIONS.STEP);
+            ctx.lineTo(topLeftX + DIMENSIONS.STEP, topLeftY);
         }
     },
     ACUTE_TR: {
         value: "actr",
         handle: (ctx, topLeftX, topLeftY) => {
-            ctx.moveTo(topLeftX + STEP, topLeftY);
-            ctx.lineTo(topLeftX + STEP, topLeftY + STEP);
+            ctx.moveTo(topLeftX + DIMENSIONS.STEP, topLeftY);
+            ctx.lineTo(topLeftX + DIMENSIONS.STEP, topLeftY + DIMENSIONS.STEP);
             ctx.lineTo(topLeftX, topLeftY);
         }
     },
@@ -115,9 +115,9 @@ export const BRUSH_SHAPES = {
             const { row, col } = coords;
 
             const [cx, cy] = center;
-            const x = cx + (col > 0 ? col - 1 : col) * STEP + STEP / 2;
-            const y = cy + (row > 0 ? row - 1 : row) * STEP + STEP / 2;
-            const radius = STEP / 2;
+            const x = cx + (col > 0 ? col - 1 : col) * DIMENSIONS.STEP + DIMENSIONS.STEP / 2;
+            const y = cy + (row > 0 ? row - 1 : row) * DIMENSIONS.STEP + DIMENSIONS.STEP / 2;
+            const radius = DIMENSIONS.STEP / 2;
 
             if (!options.style || options.style === "fill") {
                 ctx.fillStyle = options.color ?? "black";
@@ -148,9 +148,9 @@ export const BRUSH_SHAPES = {
             const [cx, cy] = center;
             if (!options.style || options.style === "fill") {
                 ctx.fillStyle = options.color ?? "black";
-                const x = cx + (col > 0 ? col - 1 : col) * STEP;
-                const y = cy + (row > 0 ? row - 1 : row) * STEP;
-                ctx.fillRect(x, y, STEP, STEP);
+                const x = cx + (col > 0 ? col - 1 : col) * DIMENSIONS.STEP;
+                const y = cy + (row > 0 ? row - 1 : row) * DIMENSIONS.STEP;
+                ctx.fillRect(x, y, DIMENSIONS.STEP, DIMENSIONS.STEP);
             } else {
                 if (options.style === "dashed") {
                     ctx.setLineDash([7, 3]);
@@ -158,9 +158,9 @@ export const BRUSH_SHAPES = {
                     ctx.setLineDash([])
                 }
                 ctx.strokeStyle = options.color ?? "black";
-                const x = cx + (col > 0 ? col - 1 : col) * STEP;
-                const y = cy + (row > 0 ? row - 1 : row) * STEP;
-                ctx.strokeRect(x, y, STEP, STEP);
+                const x = cx + (col > 0 ? col - 1 : col) * DIMENSIONS.STEP;
+                const y = cy + (row > 0 ? row - 1 : row) * DIMENSIONS.STEP;
+                ctx.strokeRect(x, y, DIMENSIONS.STEP, DIMENSIONS.STEP);
             }
         }
     },
@@ -178,8 +178,8 @@ export const BRUSH_SHAPES = {
                 draw: (ctx, coords, center, options) => {
                     const { row, col } = coords;
                     const [cx, cy] = center;
-                    const topLeftX = cx + (col > 0 ? col - 1 : col) * STEP;
-                    const topLeftY = cy + (row > 0 ? row - 1 : row) * STEP;
+                    const topLeftX = cx + (col > 0 ? col - 1 : col) * DIMENSIONS.STEP;
+                    const topLeftY = cy + (row > 0 ? row - 1 : row) * DIMENSIONS.STEP;
 
                     if (!options.style || options.style === "fill") {
                         ctx.fillStyle = options.color ?? "black";
