@@ -1,6 +1,6 @@
 # Shared Canvas
 
-Very simple canvas application that can be shared between multiple users thanks to CRDTs. 
+Very simple canvas application that can be shared between multiple users thanks to CRDTs. (Currently the multi-user collaboration does not work due to signalling server being unavailable, but you can still use the application locally)
 
 Check it out here: https://shared-canvas.vercel.app/ 
 
